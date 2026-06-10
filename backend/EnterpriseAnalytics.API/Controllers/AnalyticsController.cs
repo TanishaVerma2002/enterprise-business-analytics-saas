@@ -104,7 +104,6 @@ namespace EnterpriseAnalytics.API.Controllers
         }
 
         [HttpGet("monthly-revenue")]
-
         public IActionResult GetMonthlyRevenue()
         {
             var monthlyRevenue = _context.Sales
@@ -119,18 +118,32 @@ namespace EnterpriseAnalytics.API.Controllers
                 {
                     Year = g.Key.Year,
 
-                    Month = g.Key.Month,
+                    MonthNumber = g.Key.Month,
 
                     Revenue = g.Sum(x => x.TotalAmount)
                 })
 
                 .OrderBy(x => x.Year)
 
-                .ThenBy(x => x.Month)
+                .ThenBy(x => x.MonthNumber)
 
                 .ToList();
 
-            return Ok(monthlyRevenue);
+            var result = monthlyRevenue
+                .Select(x => new
+                {
+                    x.Year,
+
+                    Month = new DateTime(
+                        x.Year,
+                        x.MonthNumber,
+                        1
+                    ).ToString("MMM"),
+
+                    x.Revenue
+                });
+
+            return Ok(result);
         }
 
         [HttpGet("dashboard-summary")]
