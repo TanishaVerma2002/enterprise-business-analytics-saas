@@ -1,0 +1,32 @@
+.page-container {
+    display: flex;
+    min-height: 100vh;
+    background: #f3f4f6;
+}
+
+.page-content {
+    flex: 1;
+    padding: 30px;
+}
+
+.page-card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow:
+        0px 2px 10px rgba(0,0,0,0.1);
+}
+
+.page-title {
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+.page-btn {
+    background: rgb(31, 30, 30);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+}

@@ -1,0 +1,33 @@
+.sidebar {
+    width: 240px;
+    background: #111827;
+    color: white;
+    padding: 20px;
+    min-height: 100vh;
+}
+
+.sidebar-title {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: larger;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: white;
+    text-decoration: none;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+.sidebar-link:hover {
+    background: #2563eb;
+}
+
+.sidebar-icon {
+    font-size: 18px;
+}
