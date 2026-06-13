@@ -37,7 +37,6 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy.WithOrigins(
-                "http://localhost:5173",
                 "https://enterprise-business-analytics-saas.vercel.app/"
             )
             .AllowAnyHeader()
