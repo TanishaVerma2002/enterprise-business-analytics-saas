@@ -4,8 +4,8 @@ namespace EnterpriseAnalytics.API.Services.Interfaces
 {
     public interface ICsvImportService
     {
-        Task ImportProductsAsync(IFormFile file);
-        Task ImportSalesAsync(IFormFile file);
+        Task<string> ImportProductsAsync(IFormFile file);
+        Task<string> ImportSalesAsync(IFormFile file);
     }
 }
 

@@ -32,11 +32,13 @@ namespace EnterpriseAnalytics.API.Controllers
                 });
             }
 
-            await _csvImportService.ImportProductsAsync(file);
+            var result =
+                await _csvImportService
+                    .ImportProductsAsync(file);
 
             return Ok(new
             {
-                Message = "CSV imported successfully"
+                Message = result
             });
         }
 
@@ -53,12 +55,13 @@ namespace EnterpriseAnalytics.API.Controllers
                 });
             }
 
-            await _csvImportService
-                .ImportSalesAsync(file);
+            var result =
+                await _csvImportService
+                    .ImportSalesAsync(file);
 
             return Ok(new
             {
-                Message = "Sales file imported successfully"
+                Message = result
             });
         }
     }

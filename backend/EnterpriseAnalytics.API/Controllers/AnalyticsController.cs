@@ -103,39 +103,55 @@ namespace EnterpriseAnalytics.API.Controllers
             return Ok(revenueData);
         }
 
-        [HttpGet("monthly-revenue")]
-        public IActionResult GetMonthlyRevenue()
+        [HttpGet("stock-by-product")]
+        public IActionResult GetStockByProduct()
         {
-            var monthlyRevenue = _context.Sales
+            var stockData = _context.Products
 
-                .GroupBy(s => new
+                .Select(p => new
                 {
-                    s.SaleDate.Year,
-                    s.SaleDate.Month
+                    ProductName = p.Name,
+
+                    Stock = p.StockQuantity
                 })
+
+                .OrderByDescending(x => x.Stock)
+
+                .ToList();
+
+            return Ok(stockData);
+        }
+
+        [HttpGet("monthly-revenue")]
+        public IActionResult GetMonthlyRevenue(int? year)
+        {
+            var salesQuery = _context.Sales.AsQueryable();
+
+            if (year.HasValue)
+            {
+                salesQuery = salesQuery
+                    .Where(x => x.SaleDate.Year == year.Value);
+            }
+
+            var monthlyRevenue = salesQuery
+
+                .GroupBy(x => x.SaleDate.Month)
 
                 .Select(g => new
                 {
-                    Year = g.Key.Year,
-
-                    MonthNumber = g.Key.Month,
-
+                    MonthNumber = g.Key,
                     Revenue = g.Sum(x => x.TotalAmount)
                 })
 
-                .OrderBy(x => x.Year)
-
-                .ThenBy(x => x.MonthNumber)
+                .OrderBy(x => x.MonthNumber)
 
                 .ToList();
 
             var result = monthlyRevenue
                 .Select(x => new
                 {
-                    x.Year,
-
                     Month = new DateTime(
-                        x.Year,
+                        2000,
                         x.MonthNumber,
                         1
                     ).ToString("MMM"),
@@ -191,6 +207,22 @@ namespace EnterpriseAnalytics.API.Controllers
 
                 TotalOrders = totalOrders
             });
+        }
+
+        [HttpGet("available-years")]
+        public IActionResult GetAvailableYears()
+        {
+            var years = _context.Sales
+
+                .Select(x => x.SaleDate.Year)
+
+                .Distinct()
+
+                .OrderByDescending(x => x)
+
+                .ToList();
+
+            return Ok(years);
         }
 
         [HttpGet("insights")]
