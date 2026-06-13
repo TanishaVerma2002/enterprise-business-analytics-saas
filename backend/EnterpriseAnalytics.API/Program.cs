@@ -37,7 +37,7 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy.WithOrigins(
-                "https://enterprise-business-analytics-git-4b243b-tanisha-s-projects2002.vercel.app/"
+                "https://enterprise-business-analytics-saas-orh8xwpym.vercel.app/"
             )
             .AllowAnyHeader()
             .AllowAnyMethod();
@@ -130,7 +130,7 @@ app.UseCors("AllowFrontend");
 
 app.UseMiddleware<ExceptionMiddleware>();
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 //Middleware pipeline - for authentication
 
