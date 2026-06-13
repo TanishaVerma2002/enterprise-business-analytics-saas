@@ -1,13 +1,10 @@
-import { useEffect, useState }
-from "react";
+import { useEffect, useState } from "react";
 
-import Sidebar
-from "../components/Sidebar";
+import Sidebar from "../components/Sidebar";
 
 import api from "../services/api";
 
 import "./Page.css";
-
 
 import {
     LineChart,
@@ -27,15 +24,65 @@ function Revenue() {
         setMonthlyRevenue]
         = useState([]);
 
-        const [chartType,
+    const [chartType,
         setChartType]
         = useState("line");
 
+    const [years,
+        setYears]
+        = useState([]);
+
+    const [selectedYear,
+        setSelectedYear]
+        = useState("");
+
     useEffect(() => {
 
-        fetchRevenue();
+        loadYears();
 
     }, []);
+
+    useEffect(() => {
+
+        if (selectedYear)
+        {
+            fetchRevenue();
+        }
+
+    }, [selectedYear]);
+
+    const loadYears = async () => {
+
+        try {
+
+            const token =
+                localStorage.getItem("token");
+
+            const response =
+                await api.get(
+                    "/analytics/available-years",
+                    {
+                        headers: {
+                            Authorization:
+                                `Bearer ${token}`
+                        }
+                    }
+                );
+
+            setYears(response.data);
+
+            if(response.data.length > 0)
+            {
+                setSelectedYear(
+                    response.data[0]
+                );
+            }
+
+        } catch (error) {
+
+            console.error(error);
+        }
+    };
 
     const fetchRevenue = async () => {
 
@@ -44,15 +91,16 @@ function Revenue() {
             const token =
                 localStorage.getItem("token");
 
-            const response = await api.get(
-                "/analytics/monthly-revenue",
-                {
-                    headers: {
-                        Authorization:
-                            `Bearer ${token}`
+            const response =
+                await api.get(
+                    `/analytics/monthly-revenue?year=${selectedYear}`,
+                    {
+                        headers: {
+                            Authorization:
+                                `Bearer ${token}`
+                        }
                     }
-                }
-            );
+                );
 
             setMonthlyRevenue(
                 response.data
@@ -66,119 +114,140 @@ function Revenue() {
 
     return (
 
-                <div className="page-container">
+        <div className="page-container">
 
-                    <Sidebar />
+            <Sidebar />
 
-                    <div className="page-content">
+            <div className="page-content">
 
-                        <h1 className="page-title">
-                            Revenue Analytics
-                        </h1>
+                <h1 className="page-title">
+                    Revenue Analytics
+                </h1>
 
-                        <div className="page-card">
+                <div className="page-card">
 
-                            <ResponsiveContainer
-                                width="100%"
-                                height={400}
-                            >
+                    <div
+                        style={{
+                            display: "flex",
+                            gap: "15px",
+                            marginBottom: "20px"
+                        }}
+                    >
 
-                                <select
-                                value={chartType}
-                                onChange={(e) =>
-                                    setChartType(
-                                        e.target.value
-                                    )
-                                }
-                            >
-
-                                <option value="line">
-                                    Line Chart
-                                </option>
-
-                                <option value="bar">
-                                    Bar Chart
-                                </option>
-
-                            </select>
-
-                            <br /><br />
-
-                               <ResponsiveContainer
-                                width="100%"
-                                height={400}
-                            >
-
+                        <select
+                            value={selectedYear}
+                            onChange={(e) =>
+                                setSelectedYear(
+                                    e.target.value
+                                )
+                            }
+                        >
                             {
+                                years.map(year => (
+
+                                    <option
+                                        key={year}
+                                        value={year}
+                                    >
+                                        {year}
+                                    </option>
+
+                                ))
+                            }
+                        </select>
+
+                        <select
+                            value={chartType}
+                            onChange={(e) =>
+                                setChartType(
+                                    e.target.value
+                                )
+                            }
+                        >
+                            <option value="line">
+                                Line Chart
+                            </option>
+
+                            <option value="bar">
+                                Bar Chart
+                            </option>
+                        </select>
+
+                    </div>
+
+                    <ResponsiveContainer
+                        width="100%"
+                        height={400}
+                    >
+
+                        {
                             chartType === "line"
 
                             ? (
 
-                            <LineChart
-                                data={monthlyRevenue}
-                            >
+                                <LineChart
+                                    data={monthlyRevenue}
+                                >
 
-                                <CartesianGrid
-                                    strokeDasharray="3 3"
-                                />
+                                    <CartesianGrid
+                                        strokeDasharray="3 3"
+                                    />
 
-                                <XAxis
-                                    dataKey="month"
-                                />
+                                    <XAxis
+                                        dataKey="month"
+                                    />
 
-                                <YAxis />
+                                    <YAxis />
 
-                                <Tooltip />
+                                    <Tooltip />
 
-                                <Line
-                                    type="monotone"
-                                    dataKey="revenue"
-                                    stroke="#2563eb"
-                                />
+                                    <Line
+                                        type="monotone"
+                                        dataKey="revenue"
+                                        stroke="#2563eb"
+                                        strokeWidth={3}
+                                    />
 
-                            </LineChart>
+                                </LineChart>
 
                             )
 
                             : (
 
-                            <BarChart
-                                data={monthlyRevenue}
-                            >
+                                <BarChart
+                                    data={monthlyRevenue}
+                                >
 
-                                <CartesianGrid
-                                    strokeDasharray="3 3"
-                                />
+                                    <CartesianGrid
+                                        strokeDasharray="3 3"
+                                    />
 
-                                <XAxis
-                                    dataKey="month"
-                                />
+                                    <XAxis
+                                        dataKey="month"
+                                    />
 
-                                <YAxis />
+                                    <YAxis />
 
-                                <Tooltip />
+                                    <Tooltip />
 
-                                <Bar
-                                    dataKey="revenue"
-                                    fill="#2563eb"
-                                />
+                                    <Bar
+                                        dataKey="revenue"
+                                        fill="#bec1c6"
+                                    />
 
-                            </BarChart>
+                                </BarChart>
 
                             )
+                        }
 
-                            }
-
-                            </ResponsiveContainer>
-
-                            </ResponsiveContainer>
-
-                        </div>
-
-                    </div>
+                    </ResponsiveContainer>
 
                 </div>
-            );
+
+            </div>
+
+        </div>
+    );
 }
 
 export default Revenue;

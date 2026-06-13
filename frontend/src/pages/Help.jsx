@@ -203,6 +203,7 @@ function Help() {
 
                         <thead>
 
+
                             <tr>
 
                                 <th>
@@ -242,7 +243,7 @@ function Help() {
                                 </td>
 
                                 <td>
-                                    2025-06-01
+                                    01-06-2025
                                 </td>
 
                             </tr>
@@ -262,7 +263,7 @@ function Help() {
                                 </td>
 
                                 <td>
-                                    2025-06-02
+                                    02-06-2025
                                 </td>
 
                             </tr>
@@ -277,38 +278,105 @@ function Help() {
 
                 <div className="card">
 
-                    <h2>
-                        Notes
-                    </h2>
+                <h2>
+                    Analytics Available
+                </h2>
 
-                    <br />
+                <br />
 
-                    <ol>
+                <ul>
 
-                        <li>
-                            Upload Products before Sales.
-                        </li>
+                    <li>
+                        Dashboard Summary KPIs
+                    </li>
 
-                        <li>
-                            SaleDate format:
-                            YYYY-MM-DD
-                        </li>
+                    <li>
+                        Monthly Revenue Trend
+                    </li>
 
-                        <li>
-                            Quantity must be numeric.
-                        </li>
+                    <li>
+                        Revenue by Product
+                    </li>
 
-                        <li>
-                            Price must be numeric.
-                        </li>
+                    <li>
+                        Top Selling Products
+                    </li>
 
-                        <li>
-                            TotalAmount must be numeric.
-                        </li>
+                    <li>
+                        Product Inventory Distribution
+                    </li>
 
-                    </ol>
+                    <li>
+                        AI Generated Business Insights
+                    </li>
 
-                </div>
+                    <li>
+                        Year-wise Revenue Analysis
+                    </li>
+
+                </ul>
+
+            </div>
+
+            <br />
+
+                <div className="card">
+
+                <h2>
+                    Notes
+                </h2>
+
+                <br />
+
+                <ol>
+
+                    <li>
+                        Upload Products before uploading Sales.
+                    </li>
+
+                    <li>
+                        Product names must be unique.
+                        Duplicate products will be skipped automatically.
+                    </li>
+
+                    <li>
+                        Sales ProductName must already exist in the
+                        uploaded Products dataset.
+                    </li>
+
+                    <li>
+                        SaleDate must be a valid date.
+                    </li>
+
+                    <li>
+                        Quantity must be numeric.
+                    </li>
+
+                    <li>
+                        Price must be numeric.
+                    </li>
+
+                    <li>
+                        TotalAmount must be numeric.
+                    </li>
+
+                    <li>
+                        Products upload displays:
+                        Added Products and Skipped Duplicates.
+                    </li>
+
+                    <li>
+                        Revenue Analytics can be filtered by year.
+                    </li>
+
+                    <li>
+                        Product Inventory Distribution is generated
+                        from Product stock quantities.
+                    </li>
+
+                </ol>
+
+            </div>
 
             </div>
 

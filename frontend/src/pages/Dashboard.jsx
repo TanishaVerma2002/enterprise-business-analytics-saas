@@ -44,11 +44,16 @@ function Dashboard() {
     const [insights, setInsights]
         = useState([]);
 
+    const [years, setYears] = useState([]);
+    const [selectedYear, setSelectedYear] = useState("");
+
     useEffect(() => {
 
         fetchSummary();
 
-        fetchMonthlyRevenue();
+        loadYears();
+
+        //fetchMonthlyRevenue();
 
         fetchTopProducts();
 
@@ -67,26 +72,51 @@ function Dashboard() {
 
     const fetchSummary = async () => {
 
-        try {
+            try {
 
-            const token =
-                localStorage.getItem("token");
+                const token =
+                    localStorage.getItem("token");
 
-            const response = await api.get(
-                "/analytics/dashboard-summary",
-                {
-                    headers: {
-                        Authorization:
-                            `Bearer ${token}`
+                const response = await api.get(
+                    "/analytics/dashboard-summary",
+                    {
+                        headers: {
+                            Authorization:
+                                `Bearer ${token}`
+                        }
                     }
+                );
+
+                setSummary(response.data);
+
+            } catch (error) {
+
+                console.error(error);
+            }
+        };
+
+        const loadYears = async () => {
+
+        const token =
+            localStorage.getItem("token");
+
+        const response = await api.get(
+            "/analytics/available-years",
+            {
+                headers: {
+                    Authorization:
+                        `Bearer ${token}`
                 }
+            }
+        );
+
+        setYears(response.data);
+
+        if(response.data.length > 0)
+        {
+            setSelectedYear(
+                response.data[0]
             );
-
-            setSummary(response.data);
-
-        } catch (error) {
-
-            console.error(error);
         }
     };
 
@@ -98,7 +128,7 @@ function Dashboard() {
                 localStorage.getItem("token");
 
             const response = await api.get(
-                "/analytics/monthly-revenue",
+                `/analytics/monthly-revenue?year=${selectedYear}`,
                 {
                     headers: {
                         Authorization:
@@ -116,6 +146,15 @@ function Dashboard() {
             console.error(error);
         }
     };
+
+   useEffect(() => {
+
+        if (selectedYear)
+        {
+            fetchMonthlyRevenue();
+        }
+
+    }, [selectedYear]);
 
         const fetchTopProducts = async () => {
 
@@ -310,6 +349,29 @@ function Dashboard() {
                     <h2>
                         Monthly Revenue Trend
                     </h2>
+
+                    <select
+                        value={selectedYear}
+                        onChange={(e) =>
+                            setSelectedYear(
+                                e.target.value
+                            )
+                        }
+                    >
+                    {
+                        years.map(year => (
+                            <option
+                                key={year}
+                                value={year}
+                            >
+                                {year}
+                            </option>
+                        ))
+                    }
+                    </select>
+
+                    <br />
+                    <br />
 
                     <ResponsiveContainer
                         width="100%"

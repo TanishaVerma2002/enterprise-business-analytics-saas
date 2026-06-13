@@ -4,6 +4,8 @@ import Sidebar from "../components/Sidebar";
 
 import api from "../services/api";
 
+import { ClipLoader } from "react-spinners";
+
 import "./Page.css";
 
 function Uploads() {
@@ -14,75 +16,124 @@ function Uploads() {
     const [salesFile, setSalesFile]
         = useState(null);
 
+    const [loading, setLoading] = useState(false);
+
+    const [uploadMessage, setUploadMessage]
+        = useState("");
+
     const uploadProducts = async () => {
 
-        try {
+            try {
 
-            const token =
-                localStorage.getItem("token");
+                setLoading(true);
 
-            const formData = new FormData();
+                setUploadMessage("");
 
-            formData.append(
-                "file",
-                productFile
-            );
+                const token =
+                    localStorage.getItem("token");
 
-            await api.post(
-                "/upload/products",
-                formData,
-                {
-                    headers: {
-                        Authorization:
-                            `Bearer ${token}`,
-                        "Content-Type":
-                            "multipart/form-data"
+                const formData = new FormData();
+
+                formData.append(
+                    "file",
+                    productFile
+                );
+
+                const response = await api.post(
+                    "/upload/products",
+                    formData,
+                    {
+                        headers: {
+                            Authorization:
+                                `Bearer ${token}`,
+                            "Content-Type":
+                                "multipart/form-data"
+                        }
                     }
-                }
-            );
+                );
 
-            alert("Products uploaded");
+               setUploadMessage(
+                            `✅ ${response.data.message}`
+                        );
 
-        } catch (error) {
+                        setProductFile(null);
 
-            console.error(error);
-        }
-    };
+                        document.getElementById(
+                            "productFile"
+                        ).value = "";
 
-    const uploadSales = async () => {
+                    } catch (error) {
 
-        try {
+                            console.error(error);
 
-            const token =
-                localStorage.getItem("token");
+                            const errorMessage =
+                                error.response?.data?.message
+                                || error.response?.data?.Message
+                                || "Product upload failed";
 
-            const formData = new FormData();
+                            setUploadMessage(
+                                `❌ ${errorMessage}`
+                            );
+                        } finally {
 
-            formData.append(
-                "file",
-                salesFile
-            );
-
-            await api.post(
-                "/upload/sales",
-                formData,
-                {
-                    headers: {
-                        Authorization:
-                            `Bearer ${token}`,
-                        "Content-Type":
-                            "multipart/form-data"
+                        setLoading(false);
                     }
-                }
-            );
+                };
 
-            alert("Sales uploaded");
+            const uploadSales = async () => {
 
-        } catch (error) {
+            try {
 
-            console.error(error);
-        }
-    };
+                setLoading(true);
+
+                setUploadMessage("");
+
+                const token =
+                    localStorage.getItem("token");
+
+                const formData = new FormData();
+
+                formData.append(
+                    "file",
+                    salesFile
+                );
+
+                const response = await api.post(
+                    "/upload/sales",
+                    formData,
+                    {
+                        headers: {
+                            Authorization:
+                                `Bearer ${token}`,
+                            "Content-Type":
+                                "multipart/form-data"
+                        }
+                    }
+                );
+
+                setUploadMessage(
+                    `✅ ${response.data.message}`
+                );
+
+                setSalesFile(null);
+
+                document.getElementById(
+                    "salesFile"
+                ).value = "";
+
+            } catch (error) {
+
+                console.error(error);
+
+                setUploadMessage(
+                    "❌ Sales upload failed"
+                );
+
+            } finally {
+
+                setLoading(false);
+            }
+        };
 
   return (
 
@@ -95,6 +146,41 @@ function Uploads() {
                     <h1 className="page-title">
                         Upload Data
                     </h1>
+
+                    {
+                        loading && (
+                            <div
+                                style={{
+                                    marginTop: "20px",
+                                    textAlign: "center"
+                                }}
+                            >
+                                <ClipLoader size={40} />
+
+                                <p
+                                    style={{
+                                        marginTop: "10px"
+                                    }}
+                                >
+                                    Uploading file...
+                                </p>
+                            </div>
+                        )
+                    }
+
+                    {
+                        uploadMessage && (
+                            <div
+                                style={{
+                                    marginTop: "20px",
+                                    fontWeight: "600",
+                                    textAlign: "center"
+                                }}
+                            >
+                                {uploadMessage}
+                            </div>
+                        )
+                    }
 
                     <div
                         className="page-card"
@@ -110,6 +196,7 @@ function Uploads() {
                         <br />
 
                         <input
+                            id="productFile"
                             type="file"
                             onChange={(e) =>
                                 setProductFile(
@@ -120,13 +207,17 @@ function Uploads() {
 
                         <br /><br />
 
-                        <button
+                       <button
                             className="page-btn"
                             onClick={uploadProducts}
+                            disabled={loading}
                         >
-                            Upload Products
+                            {
+                                loading
+                                    ? "Uploading..."
+                                    : "Upload Products"
+                            }
                         </button>
-
                     </div>
 
                     <div className="page-card">
@@ -138,6 +229,7 @@ function Uploads() {
                         <br />
 
                         <input
+                            id="salesFile"
                             type="file"
                             onChange={(e) =>
                                 setSalesFile(
@@ -151,8 +243,13 @@ function Uploads() {
                         <button
                             className="page-btn"
                             onClick={uploadSales}
+                            disabled={loading}
                         >
-                            Upload Sales
+                            {
+                                loading
+                                    ? "Uploading..."
+                                    : "Upload Sales"
+                            }
                         </button>
 
                     </div>

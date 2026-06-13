@@ -18,22 +18,18 @@ import {
     Bar,
     XAxis,
     YAxis,
-    CartesianGrid,
-    ResponsiveContainer
+    CartesianGrid
 } from "recharts";
 
 const COLORS = [
-
-    "#2563eb",
-
-    "#16a34a",
-
-    "#f59e0b",
-
-    "#dc2626",
-
-    "#7c3aed"
-
+    "#2563EB", // blue
+    "#10B981", // emerald
+    "#F59E0B", // amber
+    "#EF4444", // red
+    "#8B5CF6", // violet
+    "#06B6D4", // cyan
+    "#EC4899", // pink
+    "#84CC16"  // lime
 ];
 
 
@@ -45,15 +41,50 @@ function Products() {
 
     const [chartType,
     setChartType]
-    = useState("pie");
+    = useState("bar");
+
+    const [revenueData, setRevenueData] = useState([]);
+
+    const [stockData, setStockData] = useState([]);
 
     useEffect(() => {
 
-        fetchProducts();
+        fetchTopProducts();
+        fetchRevenueData();
+        fetchStockData();
 
     }, []);
 
-    const fetchProducts = async () => {
+    //Top product API
+
+    const fetchTopProducts = async () => {
+
+                try {
+
+                    const token =
+                        localStorage.getItem("token");
+
+                    const response = await api.get(
+                        "/analytics/top-products",
+                        {
+                            headers: {
+                                Authorization:
+                                    `Bearer ${token}`
+                            }
+                        }
+                    );
+
+                    setTopProducts(response.data);
+
+                } catch (error) {
+
+                    console.error(error);
+                }
+            };
+
+        // Revenue by product
+
+        const fetchRevenueData = async () => {
 
         try {
 
@@ -61,7 +92,7 @@ function Products() {
                 localStorage.getItem("token");
 
             const response = await api.get(
-                "/analytics/top-products",
+                "/analytics/revenue-by-product",
                 {
                     headers: {
                         Authorization:
@@ -70,9 +101,7 @@ function Products() {
                 }
             );
 
-            setTopProducts(
-                response.data
-            );
+            setRevenueData(response.data);
 
         } catch (error) {
 
@@ -80,143 +109,278 @@ function Products() {
         }
     };
 
+    // To show Unique products
+
+    const fetchStockData = async () => {
+
+        try {
+
+            const token =
+                localStorage.getItem("token");
+
+            const response = await api.get(
+                "/analytics/stock-by-product",
+                {
+                    headers: {
+                        Authorization:
+                            `Bearer ${token}`
+                    }
+                }
+            );
+
+            setStockData(response.data);
+
+        } catch (error) {
+
+            console.error(error);
+        }
+    };
+
+    // return statements to display - HTML
+
         return (
 
-            <div className="page-container">
+                    <div className="page-container">
 
-                <Sidebar />
+                        <Sidebar />
 
-                <div className="page-content">
+                        <div className="page-content">
 
-                    <h1 className="page-title">
-                        Product Analytics
-                    </h1>
+                            <h1 className="page-title">
+                                Top Selling Products
+                            </h1>
 
-                    <div className="page-card">
+                            <div className="page-card">
 
-                        <ResponsiveContainer
-                            width="100%"
-                            height={400}
-                        >
-
-                            <select
-                            value={chartType}
-                            onChange={(e) =>
-                                setChartType(
-                                    e.target.value
-                                )
-                            }
-                        >
-
-                            <option value="pie">
-                                Pie Chart
-                            </option>
-
-                            <option value="bar">
-                                Bar Chart
-                            </option>
-
-                        </select>
-
-                        <br /><br />
-
-                            <ResponsiveContainer
-                                width="100%"
-                                height={400}
-                            >
-
-                            {
-                            chartType === "pie"
-
-                            ? (
-
-                            <PieChart>
-
-                                <Pie
-
-                                    data={topProducts}
-
-                                    dataKey="totalQuantity"
-
-                                    nameKey="productName"
-
-                                    outerRadius={140}
-
-                                    label
-                                >
-
-                                    {
-                                        topProducts.map(
-                                            (
-                                                entry,
-                                                index
-                                            ) => (
-
-                                                <Cell
-
-                                                    key={index}
-
-                                                    fill={
-                                                        COLORS[
-                                                            index %
-                                                            COLORS.length
-                                                        ]
-                                                    }
-                                                />
-
-                                            )
+                                <select
+                                    value={chartType}
+                                    onChange={(e) =>
+                                        setChartType(
+                                            e.target.value
                                         )
                                     }
+                                >
+                                    
+                                    <option value="bar">
+                                        Bar Chart
+                                    </option>
 
-                                </Pie>
+                                    <option value="pie">
+                                        Pie Chart
+                                    </option>
 
-                                <Legend />
+                                    
+                                </select>
 
-                                <Tooltip />
+                                <br />
+                                <br />
 
-                            </PieChart>
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        alignItems: "center"
+                                    }}
+                                >
 
-                            )
+                                   {
+                                    chartType === "bar"
 
-                            : (
+                                    ? (
 
-                            <BarChart
-                                data={topProducts}
-                            >
+                                        <BarChart
+                                            width={700}
+                                            height={350}
+                                            data={topProducts}
+                                        >
 
-                                <CartesianGrid
-                                    strokeDasharray="3 3"
-                                />
+                                            <CartesianGrid
+                                                strokeDasharray="3 3"
+                                            />
 
-                                <XAxis
-                                    dataKey="productName"
-                                />
+                                            <XAxis
+                                                dataKey="productName"
+                                            />
 
-                                <YAxis />
+                                            <YAxis />
 
-                                <Tooltip />
+                                            <Tooltip />
 
-                                <Bar
-                                    dataKey="totalQuantity"
-                                    fill="#16a34a"
-                                />
+                                            <Bar
+                                                dataKey="totalQuantity"
+                                                fill="#bec1c6"
+                                            />
 
-                            </BarChart>
+                                        </BarChart>
 
-                            )
+                                    )
 
-                            }
+                                    : (
 
-                            </ResponsiveContainer>
+                                        <PieChart
+                                            width={500}
+                                            height={350}
+                                        >
 
-                        </ResponsiveContainer>
+                                            <Pie
+                                                data={topProducts}
+                                                dataKey="totalQuantity"
+                                                nameKey="productName"
+                                                cx="50%"
+                                                cy="50%"
+                                                outerRadius={120}
+                                                label
+                                            >
+
+                                                {
+                                                    topProducts.map(
+                                                        (entry, index) => (
+
+                                                            <Cell
+                                                                key={index}
+                                                                fill={
+                                                                    COLORS[
+                                                                        index %
+                                                                        COLORS.length
+                                                                    ]
+                                                                }
+                                                            />
+
+                                                        )
+                                                    )
+                                                }
+
+                                            </Pie>
+
+                                            <Tooltip />
+
+                                            <Legend />
+
+                                        </PieChart>
+
+                                    )
+                                }
+
+                                </div>
+
+                            </div>
+
+                            <h1 className="page-title">
+                                Product Revenue Distribution
+                            </h1>
+
+                            <div className="page-card">
+
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        justifyContent: "center"
+                                    }}
+                                >
+
+                                    <PieChart
+                                        width={500}
+                                        height={350}
+                                    >
+
+                                        <Pie
+                                            data={revenueData}
+                                            dataKey="revenue"
+                                            nameKey="productName"
+                                            outerRadius={120}
+                                            label
+                                        >
+
+                                            {
+                                                revenueData.map(
+                                                    (entry, index) => (
+
+                                                        <Cell
+                                                            key={index}
+                                                            fill={
+                                                                COLORS[
+                                                                    index %
+                                                                    COLORS.length
+                                                                ]
+                                                            }
+                                                        />
+
+                                                    )
+                                                )
+                                            }
+
+                                        </Pie>
+
+                                        <Tooltip />
+
+                                        <Legend />
+
+                                    </PieChart>
+
+                                </div>
+
+                            </div>
+
+                            <h1 className="page-title">
+                                Product Inventory Distribution
+                            </h1>
+
+                            <div className="page-card">
+
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        justifyContent: "center"
+                                    }}
+                                >
+
+                                    <PieChart
+                                        width={500}
+                                        height={350}
+                                    >
+
+                                        <Pie
+                                            data={stockData}
+                                            dataKey="stock"
+                                            nameKey="productName"
+                                            outerRadius={120}
+                                            label
+                                        >
+
+                                            {
+                                                stockData.map(
+                                                    (entry, index) => (
+
+                                                        <Cell
+                                                            key={index}
+                                                            fill={
+                                                                COLORS[
+                                                                    index %
+                                                                    COLORS.length
+                                                                ]
+                                                            }
+                                                        />
+
+                                                    )
+                                                )
+                                            }
+
+                                        </Pie>
+
+                                        <Tooltip />
+
+                                        <Legend />
+
+                                    </PieChart>
+
+                                </div>
+
+                            </div>
+
+                        </div>
 
                     </div>
-
-                </div>
-
-            </div>
-        );
+                );
 }
 
 export default Products;
