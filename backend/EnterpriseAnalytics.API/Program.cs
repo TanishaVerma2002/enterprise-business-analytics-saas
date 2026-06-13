@@ -37,13 +37,13 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy.WithOrigins(
-                "http://localhost:5173"
+                "http://localhost:5173",
+                "https://your-frontend-url.vercel.app"
             )
             .AllowAnyHeader()
             .AllowAnyMethod();
         });
 });
-
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -115,11 +115,23 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+var port =
+    Environment.GetEnvironmentVariable("PORT");
+
+if (!string.IsNullOrEmpty(port))
+{
+    builder.WebHost.UseUrls(
+        $"http://*:{port}"
+    );
+}
+
 var app = builder.Build();
 
 app.UseCors("AllowFrontend");
 
 app.UseMiddleware<ExceptionMiddleware>();
+
+app.UseHttpsRedirection();
 
 //Middleware pipeline - for authentication
 
