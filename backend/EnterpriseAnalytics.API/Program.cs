@@ -37,7 +37,7 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy.WithOrigins(
-                "https://enterprise-business-analytics-saas.vercel.app/"
+                "https://enterprise-business-analytics-git-4b243b-tanisha-s-projects2002.vercel.app/"
             )
             .AllowAnyHeader()
             .AllowAnyMethod();
