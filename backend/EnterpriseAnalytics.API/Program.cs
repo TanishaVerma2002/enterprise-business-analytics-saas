@@ -37,7 +37,7 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy.WithOrigins(
-                "https://enterprise-business-analytics-saas.vercel.app/"
+                "https://enterprise-business-analytics-saas.vercel.app"
             )
             .AllowAnyHeader()
             .AllowAnyMethod();
@@ -126,11 +126,11 @@ if (!string.IsNullOrEmpty(port))
 
 var app = builder.Build();
 
+app.UseRouting();
+
 app.UseCors("AllowFrontend");
 
 app.UseMiddleware<ExceptionMiddleware>();
-
-//app.UseHttpsRedirection();
 
 //Middleware pipeline - for authentication
 
